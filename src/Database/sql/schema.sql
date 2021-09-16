@@ -17,6 +17,12 @@ DROP TABLE IF EXISTS HasProduced;
 DROP TABLE IF EXISTS Actors;
 DROP TABLE IF EXISTS Movies;
 
+DROP TABLE IF EXISTS Series;
+
+DROP TABLE IF EXISTS Seasons;
+
+DROP TABLE IF EXISTS Episodes;
+
 CREATE TABLE IF NOT EXISTS Actors (
     ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     birthday DATE,
@@ -38,6 +44,32 @@ CREATE TABLE IF NOT EXISTS Movies (
     original_title VARCHAR(100),
     international_title VARCHAR(100)
 );
+
+CREATE TABLE IF NOT EXISTS Series {
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    original_title VARCHAR(100),
+    international_title VARCHAR(100)
+}
+
+CREATE TABLE IF NOT EXISTS Seasons {
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    original_title VARCHAR(100),
+    international_title VARCHAR(100),
+    synopsis TEXT,
+    nb_season INT NOT NULL
+    serie_id INT NOT NULL,
+    FOREIGN KEY (serie_id) REFERENCES Series(id)
+}
+
+CREATE TABLE IF NOT EXISTS Episodes {
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    original_title VARCHAR(100),
+    international_title VARCHAR(100),
+    synopsis TEXT,
+    nb_episode INT NOT NULL
+    season_id INT NOT NULL,
+    FOREIGN KEY (season_id) REFERENCES Season(id)
+}
 
 CREATE TABLE IF NOT EXISTS HasProduced (
     producer_id INT NOT NULL,
