@@ -74,4 +74,8 @@ VALUES ("1976-5-25", "Cilian", "Murphy", "Irish");
 INSERT INTO Producers (birthday, firstname, lastname, nationnality)
 VALUES ("1969-1-01", "David", "Caffrey", "Irish");
 
-INSERT INTO AppearedIn (actor_id, movie_id)
+INSERT INTO AppearedIn (actor_id, serie_id)
+VALUES (5, 1);
+
+INSERT INTO HasProduced(producer_id, serie_id)
+VALUES (3, 1);
