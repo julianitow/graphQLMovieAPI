@@ -1,12 +1,81 @@
 import express from 'express';
+import { graphqlHTTP } from 'express-graphql';
+import mysql from 'mysql2';
+import * as dotenv from 'dotenv';
+import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLList } from 'graphql';
+import Movie from './Schema/Types/Movie';
+import * as queries from './Database';
+
+dotenv.config();
 
 const app = express();
 const port = 3000;
 
-app.get('/', (req, res) => {
-  res.send('Sample typescript-app');
+const TomHardy = {
+  id: "1",
+  birthday: "15-09-1977",
+  firstname: "Tom",
+  lastname: "Hardy",
+  nationnality: "British",
+  career: ["Inception", "Lawless"],
+  greetings: ["BIFA - Best Actor"],
+  role: "Actor"
+}
+
+const movieTest1 = {
+  id: "1",
+  original_title: "The Gentlemen",
+  international_title: "The Gentlemen",
+  distribution: [TomHardy],
+}
+const movieTest2 = {
+  id: "2",
+  original_title: "Inception",
+  international_title: "Inception",
+  distribution: [TomHardy, TomHardy]
+}
+
+const movies = [movieTest1, movieTest2];
+
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWD,
+  database: process.env.DB_NAME
 });
 
-app.listen(port, () => {
-  console.log(`server is listening on ${port}`);
-}); 
+const queryType = new GraphQLObjectType({
+  name: 'Query',
+  fields: {
+    movies: {
+      type: new GraphQLList(Movie),
+      resolve(parent, args) {
+        return queries.findAllMovies(db).then(movies => {
+          return movies;
+        }).catch(err => {
+          console.error(err);
+        });
+      }
+    },
+    status: {
+        type: GraphQLString,
+        resolve(parent, args){
+          return "Welcome to Movie API"
+      }
+    }
+  }
+});
+
+const schema = new GraphQLSchema({query: queryType});
+
+app.use('/graphql', graphqlHTTP({
+  schema: schema,
+  graphiql: true
+}));
+
+app.use('/', (_, res) => {
+  res.redirect('/graphql');
+});
+
+app.listen(port);
+console.log(`Server listening on port ${port}`);
