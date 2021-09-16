@@ -48,7 +48,8 @@ CREATE TABLE IF NOT EXISTS Movies (
 CREATE TABLE IF NOT EXISTS Series (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     original_title VARCHAR(100),
-    international_title VARCHAR(100)
+    international_title VARCHAR(100),
+    synopsis TEXT
 );
 
 CREATE TABLE IF NOT EXISTS Seasons (

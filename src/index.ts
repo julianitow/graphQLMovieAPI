@@ -5,6 +5,8 @@ import * as dotenv from 'dotenv';
 import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLList } from 'graphql';
 import Movie from './Schema/Types/Movie';
 import * as queries from './Database';
+import Serie from './Schema/Types/Serie';
+import { findAllSeries } from './Database/Queries';
 
 dotenv.config();
 
@@ -55,6 +57,14 @@ const queryType = new GraphQLObjectType({
         }).catch(err => {
           console.error(err);
         });
+      }
+    },
+    series : {
+      type: new GraphQLList(Serie),
+      resolve(parent, args) {
+        return findAllSeries(db).then(series => {
+          return series;
+        }).catch(err => console.error(err));
       }
     },
     status: {

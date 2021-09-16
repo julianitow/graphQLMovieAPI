@@ -1,5 +1,36 @@
 import mysql, { RowDataPacket } from 'mysql2';
 
+interface Season {
+    original_title: String,
+    international_title: String,
+    synopsis: String,
+    distribution: Actor[],
+    producer_id?: number,
+    producer?: Producer,
+    nb_season: number,
+    episodes: Episode[]
+}
+
+interface Episode {
+    original_title: String,
+    international_title: String,
+    synopsis: String,
+    distribution: Actor[],
+    producer_id?: number,
+    producer?: Producer
+    nb_episode: number,
+}
+
+interface Serie {
+    original_title: String,
+    international_title: String,
+    synopsis: String,
+    distribution: Actor[],
+    producer_id?: number,
+    producer?: Producer,
+    seasons: Season[]
+}
+
 interface Movie {
     original_title: String,
     international_title: String,
@@ -103,5 +134,85 @@ export const findAllMovies = (db: mysql.Connection): Promise<Movie[]> => {
                 resolve(movies);
             });
         });
+    });
+};
+
+export const findEpisodesBySeasonId = (db: mysql.Connection, seasonId: number): Promise<Episode[]> => {
+    return new Promise<Episode[]>((resolve, reject) => {
+        const queryString = "SELECT distinct(id), original_title, international_title, synopsis, nb_episode FROM Episodes " +
+        "WHERE season_id = ?";
+        const episodes: Episode[] = [];
+        db.query(queryString, [seasonId.toString()], (err, result) => {
+            if(err) reject(err);
+            const rows = result as RowDataPacket[];
+            new Promise<any>((resolve, reject) => {
+                rows.forEach(row => {
+                    const episode = row as Episode;
+                    episodes.push(episode);
+                });
+                setTimeout(() => {resolve(true)}, 200);
+            }).then(() => {
+                resolve(episodes);
+            })
+        });
+    });
+};
+
+export const findSeasonsBySerieId = (db: mysql.Connection, serieId: number): Promise<Season[]> => {
+    return new Promise<Season[]>((resolve, reject) => {
+        const queryString = "SELECT distinct(id), original_title, international_title, synopsis, nb_season FROM Seasons " +
+        "WHERE serie_id = ?";
+        const seasons: Season[] = [];
+        db.query(queryString, [serieId.toString()], (err, result) => {
+            if(err) reject(err);
+            const rows = result as RowDataPacket[];
+            new Promise<any>((resolve, reject) => {
+                rows.forEach(row => {
+                    const season = row as Season;
+                    findEpisodesBySeasonId(db, row.id)
+                    .then((episodes => {
+                        season.episodes = episodes;
+                    }))
+                    .catch(err => reject(err));
+                    seasons.push(season);
+                });
+                setTimeout(() => {resolve(true)}, 200);
+            }).then(() => {
+                resolve(seasons);
+            })
+        });
+    });
+};
+
+export const findAllSeries = (db: mysql.Connection): Promise<Serie[]> => {
+    return new Promise<Serie[]>((resolve, reject) => {
+        const queryString = "SELECT distinct(id), original_title, international_title, producer_id " + 
+        "FROM Series JOIN HasProduced ON series.id = HasProduced.serie_id ";
+        const series: Serie[] = [];
+        db.query(queryString, (err, result) => {
+            if (err) reject(err);
+            const rows = result as RowDataPacket[];
+            new Promise<any>((resolve, reject) => { 
+                rows.forEach(row => {
+                    const serie = row as Serie;
+                    findSeasonsBySerieId(db, row.id).then((seasons) => {
+                        serie.seasons = seasons;
+                    });
+                    findActorsByMovieId(db, row.id).then((actors) => {
+                        serie.distribution = actors;
+                    }).catch(err => reject(err));
+                    findProducerByid(db, serie.producer_id)
+                    .then(producer => {
+                        serie.producer = producer;
+                        series.push(serie);
+                    })
+                    .catch(err => reject(err));
+                });
+                setTimeout(() => { resolve(true) }, 1000);
+            }).then(() => {
+                console.log(series);
+                resolve(series);
+            });
+        })
     });
 };
