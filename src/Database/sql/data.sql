@@ -69,6 +69,30 @@ VALUES (9, 3);
 
 INSERT INTO HasProduced (movie_id, producer_id)
 VALUES (3, 3);
+
+# Charlie and the Chocolate Factory
+INSERT INTO Actors (birthday, firstname, lastname, nationnality)
+VALUES ("1963-4-9", "Johnny", "Depp", "American");
+INSERT INTO Actors (birthday, firstname, lastname, nationnality)
+VALUES ("1992-2-14", "Freddie", "Highmore", "British");
+INSERT INTO Producers (birthday, firstname, lastname, nationnality)
+VALUES ("1958-8-25", "Tim", "Burton", "American");
+
+INSERT INTO Movies (original_title, international_title)
+VALUES ("Charlie and the Chocolate Factory", "Charlie and the Chocolate Factory");
+
+INSERT INTO AppearedIn (actor_id, movie_id)
+VALUES (3, 2);
+INSERT INTO AppearedIn (actor_id, movie_id)
+VALUES (4, 2);
+
+INSERT INTO HasProduced (movie_id, producer_id)
+VALUES (2, 2);
+
+#
+# TV Shows
+#
+
 #Peaky blinders
 
 INSERT INTO Series (original_title, international_title)
