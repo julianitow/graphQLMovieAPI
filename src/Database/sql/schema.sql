@@ -74,14 +74,18 @@ CREATE TABLE IF NOT EXISTS Episodes (
 
 CREATE TABLE IF NOT EXISTS HasProduced (
     producer_id INT NOT NULL,
-    movie_id INT NOT NULL,
+    movie_id INT,
+    serie_id INT,
     FOREIGN KEY (producer_id) REFERENCES Producers(id),
-    FOREIGN KEY (movie_id) REFERENCES Movies(id)
+    FOREIGN KEY (movie_id) REFERENCES Movies(id),
+    FOREIGN KEY (serie_id) REFERENCES Series(id)
 );
 
 CREATE TABLE IF NOT EXISTS AppearedIn (
     actor_id INT NOT NULL,
-    movie_id INT NOT NULL,
+    movie_id INT,
+    serie_id INT,
     FOREIGN KEY (actor_id) REFERENCES Actors(id),
-    FOREIGN KEY (movie_id) REFERENCES Movies(id)
+    FOREIGN KEY (movie_id) REFERENCES Movies(id),
+    FOREIGN KEY (serie_id) REFERENCES Series(id)
 );
