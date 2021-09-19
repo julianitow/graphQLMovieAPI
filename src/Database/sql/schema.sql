@@ -89,3 +89,12 @@ CREATE TABLE IF NOT EXISTS AppearedIn (
     FOREIGN KEY (movie_id) REFERENCES Movies(id),
     FOREIGN KEY (serie_id) REFERENCES Series(id)
 );
+
+ALTER TABLE Movies ADD COLUMN (poster VARCHAR(200));
+ALTER TABLE Movies ADD COLUMN (rate FLOAT);
+ALTER TABLE Movies ADD COLUMN (sinopsis TEXT);
+ALTER TABLE Movies ADD COLUMN (release_date DATE);
+ALTER TABLE Series ADD COLUMN (poster VARCHAR(200));
+ALTER TABLE Series ADD COLUMN (rate FLOAT);
+ALTER TABLE Series ADD COLUMN (sinopsis TEXT);
+ALTER TABLE Series ADD COLUMN (release_date DATE);

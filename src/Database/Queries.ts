@@ -210,9 +210,33 @@ export const findAllSeries = (db: mysql.Connection): Promise<Serie[]> => {
                 });
                 setTimeout(() => { resolve(true) }, 1000);
             }).then(() => {
-                console.log(series);
                 resolve(series);
             });
         })
     });
 };
+
+export const findSerieById = (db: mysql.Connection, id: number): Promise<Serie> => {
+    return new Promise<Serie>((resolve, reject) => {
+        const queryString = "SELECT original_title, international_title FROM Series ";
+        db.query(queryString, [id.toString()], (err, result) => {
+            if (err) reject(err);
+            const rows = result as RowDataPacket[];
+            const serie = rows[0] as Serie;
+            findSeasonsBySerieId(db, id)
+            .then((seasons) => {
+                serie.seasons = seasons
+                new Promise<boolean>((resolve, reject) => {
+                    seasons.forEach(season => {
+                        if(!(season as any).id) return;
+                        findEpisodesBySeasonId(db, (season as any).id)
+                        .then(episodes => {
+                            season.episodes = episodes;
+                        }).catch(err => reject(err));
+                    });
+                });
+            }).then(() => resolve(serie))
+            .catch(err => reject(err));
+        });
+    }); 
+}

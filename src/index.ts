@@ -2,11 +2,11 @@ import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import mysql from 'mysql2';
 import * as dotenv from 'dotenv';
-import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLList } from 'graphql';
+import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLList, GraphQLID } from 'graphql';
 import Movie from './Schema/Types/Movie';
 import * as queries from './Database';
 import Serie from './Schema/Types/Serie';
-import { findAllSeries } from './Database/Queries';
+import { findAllSeries, findSerieById } from './Database/Queries';
 
 dotenv.config();
 
@@ -65,6 +65,22 @@ const queryType = new GraphQLObjectType({
         return findAllSeries(db).then(series => {
           return series;
         }).catch(err => console.error(err));
+      }
+    },
+    serie: {
+      type: Serie,
+      args: {
+        id: {
+          type: GraphQLID,
+          description: "An id"
+        }
+      },
+      resolve(parent, args) {
+        if(!args.id) return;
+        findSerieById(db, args.id).then(serie => {
+          console.log(serie);
+          return serie;
+        }).catch(err => console.error(err)); 
       }
     },
     status: {
