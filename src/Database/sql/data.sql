@@ -79,3 +79,7 @@ VALUES (5, 1);
 
 INSERT INTO HasProduced(producer_id, serie_id)
 VALUES (3, 1);
+
+
+INSERT INTO Users (username, password) 
+VALUES ("Yunie","1234");

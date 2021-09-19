@@ -2,11 +2,15 @@ import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import mysql from 'mysql2';
 import * as dotenv from 'dotenv';
-import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLList, GraphQLID } from 'graphql';
+import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLList, GraphQLID, parse } from 'graphql';
 import Movie from './Schema/Types/Movie';
 import * as queries from './Database';
 import Serie from './Schema/Types/Serie';
-import { findAllSeries, findSerieById } from './Database/Queries';
+import { findAllSeries, findSerieById, findUserByUsername } from './Database/Queries';
+import User from "./Schema/Types/User";
+import * as bcrypt from "bcryptjs";
+import { sign, verify } from "jsonwebtoken";
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from './constants';
 
 dotenv.config();
 
@@ -63,6 +67,7 @@ const queryType = new GraphQLObjectType({
       type: new GraphQLList(Serie),
       resolve(parent, args) {
         return findAllSeries(db).then(series => {
+          console.log(series)
           return series;
         }).catch(err => console.error(err));
       }
@@ -88,11 +93,66 @@ const queryType = new GraphQLObjectType({
         resolve(parent, args){
           return "Welcome to Movie API"
       }
+    },
+    me: {
+      type: User,
+      args: {
+        username:{
+          type: GraphQLString
+        }
+      },
+      resolve(_, args) {
+        if (!args.username) {
+          return null;
+        }
+        return findUserByUsername(db,args.username).then(user => {
+          console.log(user)
+          console.log("isoké")
+          return user;
+        }).catch(err => console.error(err)); 
+      }
+    },
+    login: {
+      type: GraphQLString,
+      args: {
+        username:{
+          type: GraphQLString
+        },
+        password:{
+          type: GraphQLString
+        }
+      },
+      resolve(_,args){
+        return findUserByUsername(db,args.username).then(async user => {
+          if (!user) {
+            return null;
+          }
+          //const valid = await bcrypt.compare(args.password, user.password);
+          if (args.password != user.password) {
+            return null;
+          }
+          const accessToken = sign({ userId: user.id }, ACCESS_TOKEN_SECRET, {
+            expiresIn: "15min"
+          });
+          console.log(accessToken)
+          return accessToken;
+        })
+      }
     }
-  }
+  },
 });
 
 const schema = new GraphQLSchema({query: queryType});
+
+app.use((req, _, next) => {
+  //console.log(req)
+  /*const accessToken = req.cookies["access-token"];
+  try {
+    const data = verify(accessToken, ACCESS_TOKEN_SECRET) as any;
+    (req as any).userId = data.userId;
+  } catch {}*/
+  next();
+});
 
 app.use('/graphql', graphqlHTTP({
   schema: schema,
