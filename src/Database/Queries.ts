@@ -291,4 +291,26 @@ export const findUserByUsername = (db: mysql.Connection, username: string): Prom
             resolve(user);
         });
     });
+};
+
+export const careerByActorId = (db: mysql.Connection, actorName: string): Promise<string[]> => {
+    return new Promise<string[]>((resolve, reject) => {
+        const queryString = "SELECT original_title FROM Movies " + 
+        "JOIN AppearedIn ap on ap.movie_id = Movies.id " +
+        "JOIN Actors ON Actors.id = ap.actor_id WHERE actors.name = ?";
+        const parameters = [actorName];
+        let career: string[] = [];
+        db.query(queryString, parameters, (err, result) => {
+            const rows = result as RowDataPacket[];
+            rows.forEach(row=> {
+                career.push(row.original_title);
+            });
+        })
+        .on('end', () => {
+            resolve(career);
+        })
+        .on('error', (err) => {
+            reject(err);
+        });
+    });
 }

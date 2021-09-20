@@ -2,11 +2,11 @@ import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import mysql from 'mysql2';
 import * as dotenv from 'dotenv';
-import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLList, GraphQLID, parse } from 'graphql';
+import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLList, GraphQLID, parse, GraphQLInt } from 'graphql';
 import Movie from './Schema/Types/Movie';
 import * as queries from './Database';
 import Serie from './Schema/Types/Serie';
-import { findAllSeries, findSerieById, findUserByUsername } from './Database/Queries';
+import { findAllSeries, findSerieById, findUserByUsername, careerByActorId } from './Database/Queries';
 import User from "./Schema/Types/User";
 import * as bcrypt from "bcryptjs";
 import { sign, verify } from "jsonwebtoken";
@@ -124,6 +124,20 @@ const queryType = new GraphQLObjectType({
           console.log(accessToken)
           return accessToken;
         })
+      }
+    },
+    career: {
+      type: new GraphQLList(GraphQLString),
+      args: {
+        name: {
+          type: GraphQLString
+        }
+      },
+      resolve(parent, args) {
+        if(!args.name) return;
+        return careerByActorId(db, args.name).then(career => {
+          return career;
+        });
       }
     }
   },
