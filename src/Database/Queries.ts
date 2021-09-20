@@ -81,6 +81,13 @@ class Producer implements Person {
     role: String;
 }
 
+class User {
+    id: number;
+    count: number;
+    username: String;
+    password: String;
+}
+
 export const findProducerByid = (db: mysql.Connection, producerId: number): Promise<Producer> => {
     return new Promise<Producer>((resolve, reject) => {
         const queryString = "SELECT birthday, firstname, lastname, nationnality FROM Producers WHERE id = ?";
@@ -274,3 +281,14 @@ export const findMediaByName = (db: mysql.Connection, name: String): Promise<any
 
 //TODO Carreer
 // select movies.original_title from movies join appearedin ap on ap.movie_id = movies.id join actors on ap.actor_id = actors.id where actors.name = "Samir Decazza";
+
+export const findUserByUsername = (db: mysql.Connection, username: string): Promise<User> => {
+    return new Promise<User>((resolve, reject) => {
+        const queryString = "SELECT id, username, password FROM Users WHERE username = ?";
+        db.query(queryString, [username], (err, result) => {
+            if(err) reject(err);
+            const user = result[0] as User;
+            resolve(user);
+        });
+    });
+}
