@@ -13,32 +13,6 @@ dotenv.config();
 const app = express();
 const port = 3000;
 
-const TomHardy = {
-  id: "1",
-  birthday: "15-09-1977",
-  firstname: "Tom",
-  lastname: "Hardy",
-  nationnality: "British",
-  career: ["Inception", "Lawless"],
-  greetings: ["BIFA - Best Actor"],
-  role: "Actor"
-}
-
-const movieTest1 = {
-  id: "1",
-  original_title: "The Gentlemen",
-  international_title: "The Gentlemen",
-  distribution: [TomHardy],
-}
-const movieTest2 = {
-  id: "2",
-  original_title: "Inception",
-  international_title: "Inception",
-  distribution: [TomHardy, TomHardy]
-}
-
-const movies = [movieTest1, movieTest2];
-
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -59,6 +33,19 @@ const queryType = new GraphQLObjectType({
         });
       }
     },
+    movie: {
+      type: Serie,
+      args: {
+        name: {
+          type: GraphQLString,
+          description: "Name of movie"
+        }
+      },
+      resolve(parent, args, context, obj) {
+        if(!args.name) return;
+
+      }
+    },
     series : {
       type: new GraphQLList(Serie),
       resolve(parent, args) {
@@ -77,7 +64,7 @@ const queryType = new GraphQLObjectType({
       },
       resolve(parent, args) {
         if(!args.id) return;
-        findSerieById(db, args.id).then(serie => {
+        return findSerieById(db, args.id).then(serie => {
           console.log(serie);
           return serie;
         }).catch(err => console.error(err)); 

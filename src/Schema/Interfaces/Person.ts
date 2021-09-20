@@ -10,10 +10,7 @@ export default new GraphQLInterfaceType({
         birthday: {
             type: GraphQLString!
         },
-        firstname: {
-            type: GraphQLString!
-        },
-        lastname: {
+        name: {
             type: GraphQLString!
         },
         nationnality: {

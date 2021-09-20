@@ -1,4 +1,4 @@
-import { GraphQLID, GraphQLInterfaceType, GraphQLString, GraphQLList } from 'graphql';
+import { GraphQLID, GraphQLInterfaceType, GraphQLString, GraphQLList, GraphQLFloat } from 'graphql';
 import Person from './Person';
 
 
@@ -16,6 +16,18 @@ export default new GraphQLInterfaceType({
         },
         distribution: {
             type: new GraphQLList(Person)
-        }
+        },
+        poster: {
+            type: GraphQLString!
+        },
+        sinopsis: {
+            type: GraphQLString!
+        },
+        rate: {
+            type: GraphQLFloat!
+        },
+        release_date: {
+            type: GraphQLString!
+        },
     })
 });

@@ -12,10 +12,7 @@ export default new GraphQLObjectType({
         birthday: {
             type: GraphQLString!
         },
-        firstname: {
-            type: GraphQLString!
-        },
-        lastname: {
+        name: {
             type: GraphQLString!
         },
         nationnality: {
@@ -27,8 +24,14 @@ export default new GraphQLObjectType({
         greetings: {
             type: new GraphQLList(GraphQLString)!
         },
+        picture: {
+            type: GraphQLString!
+        },
         role: {
             type: GraphQLString!
-        }
+        },
+        poster: {
+            type: GraphQLString!
+        },
     },
 });

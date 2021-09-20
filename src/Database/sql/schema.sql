@@ -48,8 +48,7 @@ CREATE TABLE IF NOT EXISTS Movies (
 CREATE TABLE IF NOT EXISTS Series (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     original_title VARCHAR(100),
-    international_title VARCHAR(100),
-    synopsis TEXT
+    international_title VARCHAR(100)
 );
 
 CREATE TABLE IF NOT EXISTS Seasons (
@@ -66,7 +65,7 @@ CREATE TABLE IF NOT EXISTS Episodes (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     original_title VARCHAR(100),
     international_title VARCHAR(100),
-    synopsis TEXT,
+    sinopsis TEXT,
     nb_episode INT NOT NULL,
     season_id INT NOT NULL,
     FOREIGN KEY (season_id) REFERENCES Seasons(id)
@@ -95,6 +94,11 @@ ALTER TABLE Movies ADD COLUMN (rate FLOAT);
 ALTER TABLE Movies ADD COLUMN (sinopsis TEXT);
 ALTER TABLE Movies ADD COLUMN (release_date DATE);
 ALTER TABLE Series ADD COLUMN (poster VARCHAR(200));
-ALTER TABLE Series ADD COLUMN (rate FLOAT);
-ALTER TABLE Series ADD COLUMN (sinopsis TEXT);
+ALTER TABLE Series ADD COLUMN (rate DOUBLE);
 ALTER TABLE Series ADD COLUMN (release_date DATE);
+ALTER TABLE Actors ADD COLUMN (picture VARCHAR(100));
+ALTER TABLE Actors DROP COLUMN firstname;
+ALTER TABLE Actors DROP COLUMN lastname;
+ALTER TABLE Actors DROP COLUMN nationnality;
+ALTER TABLE Actors ADD COLUMN (name VARCHAR(200));
+ALTER TABLE Actors ADD COLUMN (biography TEXT);

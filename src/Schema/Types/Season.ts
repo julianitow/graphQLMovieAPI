@@ -1,4 +1,4 @@
-import { GraphQLID, GraphQLInterfaceType, GraphQLString, GraphQLList, GraphQLObjectType, GraphQLInt } from 'graphql';
+import { GraphQLID, GraphQLInterfaceType, GraphQLString, GraphQLList, GraphQLObjectType, GraphQLInt, GraphQLFloat } from 'graphql';
 import Media from '../Interfaces/Media';
 import Actor from './Actor';
 import Episode from './Episode';
@@ -21,7 +21,7 @@ export default new GraphQLObjectType({
         distribution: {
             type: new GraphQLList(Actor)
         },
-        synopsis: {
+        sinopsis: {
             type: GraphQLString
         },
         episodes: {
@@ -30,8 +30,17 @@ export default new GraphQLObjectType({
         nb_season: {
             type: GraphQLInt!
         },
+        release_date: {
+            type: GraphQLString!
+        },
+        rate: {
+            type: GraphQLFloat!
+        },
         producer: {
             type: Producer
-        }
+        },
+        poster: {
+            type: GraphQLString!
+        },
     }
 });
