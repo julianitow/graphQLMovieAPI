@@ -8,9 +8,10 @@ import * as queries from './Database';
 import Serie from './Schema/Types/Serie';
 import { findAllSeries, findSerieById, findUserByUsername, careerByActorId } from './Database/Queries';
 import User from "./Schema/Types/User";
-import * as bcrypt from "bcryptjs";
 import { sign, verify } from "jsonwebtoken";
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from './constants';
+import Person from './Schema/Interfaces/Person';
+import Mutation from './Schema/Mutations/Mutation';
 
 dotenv.config();
 
@@ -139,11 +140,24 @@ const queryType = new GraphQLObjectType({
           return career;
         });
       }
+    },
+    search: {
+      type: new GraphQLList(GraphQLString),
+      args: {
+        search: {
+          type: GraphQLString
+        }
+      },
+      resolve(parent, args, context, obj) {
+
+      }
     }
   },
 });
 
-const schema = new GraphQLSchema({query: queryType});
+const mutation = Mutation;
+
+const schema = new GraphQLSchema({query: queryType, mutation: mutation});
 
 app.use((req, _, next) => {
   //console.log(req)

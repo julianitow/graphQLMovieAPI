@@ -279,9 +279,6 @@ export const findMediaByName = (db: mysql.Connection, name: String): Promise<any
     return new Promise<any>(() => {});
 } 
 
-//TODO Carreer
-// select movies.original_title from movies join appearedin ap on ap.movie_id = movies.id join actors on ap.actor_id = actors.id where actors.name = "Samir Decazza";
-
 export const findUserByUsername = (db: mysql.Connection, username: string): Promise<User> => {
     return new Promise<User>((resolve, reject) => {
         const queryString = "SELECT id, username, password FROM Users WHERE username = ?";
@@ -313,4 +310,17 @@ export const careerByActorId = (db: mysql.Connection, actorName: string): Promis
             reject(err);
         });
     });
-}
+};
+
+export const insertMovie = (db: mysql.Connection, movie: any): Promise<Movie> => {
+    return new Promise<Movie>((resolve, reject) => {
+        const queryString = "INSERT INTO Movies (original_title, international_title, sinopsis, poster, rate, release_date) VALUES (?, ?, ?, ?, ?, ?)";
+        const parameters = [movie.title, movie.title, movie.sinopsis, movie.poster]
+    });
+};
+
+export const searchInAllDB = (db: mysql.Connection, search: string): Promise<any> => {
+    return new Promise<any>((resolve, reject) => {
+
+    });
+};
