@@ -1,5 +1,4 @@
 import { GraphQLID, GraphQLList, GraphQLObjectType, GraphQLString } from 'graphql';
-import Media from '../Interfaces/Media';
 import Person from '../Interfaces/Person';
 
 export default new GraphQLObjectType({

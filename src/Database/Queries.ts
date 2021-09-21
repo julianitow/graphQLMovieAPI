@@ -127,6 +127,28 @@ export const findActorsByMovieId = (db: mysql.Connection, movieId: number): Prom
     });
 };
 
+export const findActorsBySerieId = (db: mysql.Connection, movieId: number): Promise<Actor[]> => {
+    return new Promise<Actor[]>((resolve, reject) => {
+        const queryString = 
+        "SELECT actors.id, birthday, name, picture FROM Actors " +
+        "JOIN AppearedIn ap ON ap.actor_id = actors.id " +
+        "JOIN Series on series.id = ap.serie_id " +
+        "WHERE series.id = ?"
+        const actors: Actor[] = [];
+        db.query(queryString, [movieId.toString()], (err, result) => {
+            if(err) reject(err);
+            const rows = result as RowDataPacket[];
+            if(rows === undefined) return;
+            rows.forEach(row => {
+                const actor = row as Actor;
+                actor.birthday = formatDate(actor.birthday);
+                actors.push(actor);
+            });
+            resolve(actors);
+        });
+    });
+};
+
 function formatDate(date2format: string): string {
     const date = new Date(date2format);
     const year = date.getFullYear();
@@ -219,7 +241,7 @@ export const findSeasonsBySerieId = (db: mysql.Connection, serieId: number): Pro
 
 export const findAllSeries = (db: mysql.Connection): Promise<Serie[]> => {
     return new Promise<Serie[]>((resolve, reject) => {
-        const queryString = "SELECT distinct(id), original_title, international_title " + 
+        const queryString = "SELECT distinct(id), original_title, international_title, poster, rate, release_date, sinopsis " + 
         "FROM Series "/*JOIN HasProduced ON series.id = HasProduced.serie_id "*/;
         const series: Serie[] = [];
         db.query(queryString, (err, result) => {
@@ -228,10 +250,11 @@ export const findAllSeries = (db: mysql.Connection): Promise<Serie[]> => {
             new Promise<any>((resolve, reject) => { 
                 rows.forEach(row => {
                     const serie = row as Serie;
-                    findSeasonsBySerieId(db, row.id).then((seasons) => {
+                    serie.release_date = formatDate(serie.release_date);
+                    /*findSeasonsBySerieId(db, row.id).then((seasons) => {
                         serie.seasons = seasons;
-                    });
-                    findActorsByMovieId(db, row.id).then((actors) => {
+                    });*/
+                    findActorsBySerieId(db, row.id).then((actors) => {
                         serie.distribution = actors;
                         series.push(serie);
                     }).catch(err => reject(err));
@@ -246,13 +269,15 @@ export const findAllSeries = (db: mysql.Connection): Promise<Serie[]> => {
             }).then(() => {
                 resolve(series);
             });
-        })
+        }).on('end', () => {
+            // resolve(series);
+        });
     });
 };
 
 export const findSerieById = (db: mysql.Connection, id: number): Promise<Serie> => {
     return new Promise<Serie>((resolve, reject) => {
-        const queryString = "SELECT original_title, international_title, sinopsis, release_date, rate FROM Series ";
+        const queryString = "SELECT original_title, international_title, sinopsis, release_date, rate, poster FROM Series ";
         db.query(queryString, [id.toString()], (err, result) => {
             if (err) reject(err);
             const rows = result as RowDataPacket[];
@@ -315,12 +340,36 @@ export const careerByActorId = (db: mysql.Connection, actorName: string): Promis
 export const insertMovie = (db: mysql.Connection, movie: any): Promise<Movie> => {
     return new Promise<Movie>((resolve, reject) => {
         const queryString = "INSERT INTO Movies (original_title, international_title, sinopsis, poster, rate, release_date) VALUES (?, ?, ?, ?, ?, ?)";
-        const parameters = [movie.title, movie.title, movie.sinopsis, movie.poster]
+        // const parameters = [movie.title, movie.title, movie.sinopsis, movie.poster, movie.]
     });
 };
 
-export const searchInAllDB = (db: mysql.Connection, search: string): Promise<any> => {
-    return new Promise<any>((resolve, reject) => {
+export const searchInAllDB = (db: mysql.Connection, keyword: String): Promise<any> => {
+    return new Promise<any>(async (resolve, reject) => {
+        const queryMovies = "SELECT original_title FROM Movies";
+        const querySeries = "SELECT original_title FROM Series";
+        const queryActors = "SELECT name FROM Actors";
+        let fullData: any = [];
+        let resData = [];
 
-    });
+        db.query(queryMovies, (err, result) => {
+            if(err) reject(err);
+            const rows = result as RowDataPacket[];
+            console.log(typeof rows[0]);
+            rows.forEach(row => {
+                if(row.original_title.toLowerCase().indexOf(keyword.toLowerCase()) !== -1 ) {
+                    console.log("FOUND", row.original_title);
+                }
+            });
+        }) 
+        .on('end', () => {
+            
+        }) 
+        .on('error', (err) => {
+            console.error(err)
+        });
+
+        //console.log(resData);
+        resolve(resData);
+    }); 
 };

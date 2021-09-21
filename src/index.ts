@@ -6,7 +6,7 @@ import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLList, GraphQLID
 import Movie from './Schema/Types/Movie';
 import * as queries from './Database';
 import Serie from './Schema/Types/Serie';
-import { findAllSeries, findSerieById, findUserByUsername, careerByActorId } from './Database/Queries';
+import { findAllSeries, findSerieById, findUserByUsername, careerByActorId, searchInAllDB } from './Database/Queries';
 import User from "./Schema/Types/User";
 import { sign, verify } from "jsonwebtoken";
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from './constants';
@@ -144,12 +144,13 @@ const queryType = new GraphQLObjectType({
     search: {
       type: new GraphQLList(GraphQLString),
       args: {
-        search: {
+        keyword: {
           type: GraphQLString
         }
       },
       resolve(parent, args, context, obj) {
-
+        if(!args.keyword) return;
+        return searchInAllDB(db, args.search);
       }
     }
   },
